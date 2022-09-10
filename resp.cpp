@@ -93,6 +93,7 @@ void printHelp(){
 	std::cout << "---------------\n\n";
 	std::cout << "Commands:\n\n" << bold_off;
 	std::cout << bold_on << "q: " << bold_off << "quits program\n";
+	std::cout << bold_on << "cls: " << bold_off << "clears screen\n";
 	std::cout << bold_on << "help: "<< bold_off << "prints this text\n";
 	std::cout << bold_on << "show: " << bold_off << "shows the responsibility list\n";
 	std::cout << bold_on << "add <DAY> <MONTH> <COURSE> <DESCRIPTION>: " << bold_off << "adds responsibility to list\n";
@@ -176,6 +177,7 @@ int main(){
 		else if(tokens[0] == "q") return 0;
 		else if(tokens[0] == "add") addResp(command, resps);
 		else if(tokens[0] == "del") deleteResp(command, tokens[1], resps);
+		else if(tokens[0] == "cls") system("clear");
 		else std::cout << "command not found\n";
 	}
 }
