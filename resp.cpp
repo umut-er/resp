@@ -77,6 +77,7 @@ std::set<Resp, decltype(cmp)*> setResps(){
 
 int getID(){
 	std::ifstream myfile(PATH);
+	if(myfile.peek() == std::ifstream::traits_type::eof()) return 0;
 	std::string line, temp;
 	while(myfile >> std::ws && std::getline(myfile, line));
 	int count = 0;
@@ -99,6 +100,10 @@ void printHelp(){
 }
 
 void printResp(std::set<Resp, decltype(cmp)*>& resps){
+	if(resps.empty()){
+		std::cout << "no responsibilities\n";
+		return;
+	}
 	int lastDate[2] = {-1, -1};
 	for(const auto& resp: resps){
 		if(lastDate[0] != resp.day || lastDate[1] != MONTH_LOOKUP.at(resp.month)){
