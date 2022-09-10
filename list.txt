@@ -1,0 +1,6 @@
+0 3 Oct METU "Kaybedenler Kulübü"
+1 15 Sep BILKENT "Kazananlar Kulübü"
+3 12 Sep PAE "Exam Result Announcement"
+4 9 Sep GE100 "Orientation Starts"
+5 1 Oct MONTHS "New Month"
+6 14 Sep BILKENT "Last Day Before Faculty"
