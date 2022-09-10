@@ -153,6 +153,8 @@ void deleteResp(const std::string& command, std::string& id, std::set<Resp, decl
 }
 
 int main(){
+	std::ofstream temp(PATH, std::ios_base::app);
+	temp.close();
 	std::cout << "resp v0.1\n";
 	std::string command;
 	std::set<Resp, decltype(cmp)*> resps = setResps();
