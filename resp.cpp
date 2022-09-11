@@ -35,25 +35,29 @@ std::vector<std::string> tokenize(const std::string& command){
 }
 
 struct Resp{
-	int id, day;
-	std::string month, course, description;
+	int id, day, year;
+	std::string month, topic, description;
 
-	Resp(int x, int y, std::string z, std::string t, std::string n){
-		id = x; day = y; month = z; course = t; description = n;
+	Resp(int x, int y, std::string z, int t, std::string n, std::string m){
+		id = x; day = y; month = z; year = t; topic = n; description = m;
 	}
 
 	void print() const{
-		std::cout << std::left << std::setw(3) << id << "  " << std::left << std::setw(10) << course << "  " << description << std::endl;
+		std::cout << std::left << std::setw(3) << id << "  " << std::left << std::setw(10) << topic << "  " << description << std::endl;
 	}
 };
 
 bool cmp(Resp x, Resp y){
-	if(MONTH_LOOKUP.at(x.month) < MONTH_LOOKUP.at(y.month)) return true;
-	else if(MONTH_LOOKUP.at(x.month) == MONTH_LOOKUP.at(y.month)){
-		if(x.day < y.day) return true;
-		else if(x.day == y.day){
-			if(x.course < y.course) return true;
-			else if(x.course == y.course) return x.description < y.description;
+	if(x.year < y.year) return true;
+	else if(x.year == y.year){
+		if(MONTH_LOOKUP.at(x.month) < MONTH_LOOKUP.at(y.month)) return true;
+		else if(MONTH_LOOKUP.at(x.month) == MONTH_LOOKUP.at(y.month)){
+			if(x.day < y.day) return true;
+			else if(x.day == y.day){
+				if(x.topic < y.topic) return true;
+				else if(x.topic == y.topic) return x.description < y.description;
+				return false;
+			}
 			return false;
 		}
 		return false;
@@ -69,7 +73,7 @@ std::set<Resp, decltype(cmp)*> setResps(){
 
 	while(std::getline(myfile, line)){
 		temptokens = tokenize(line);
-		resps.insert({stoi(temptokens[0]), stoi(temptokens[1]), temptokens[2], temptokens[3], temptokens[4]});
+		resps.insert({stoi(temptokens[0]), stoi(temptokens[1]), temptokens[2], stoi(temptokens[3]), temptokens[4], temptokens[5]});
 	}
 	myfile.close();
 	return resps;
@@ -96,7 +100,7 @@ void printHelp(){
 	std::cout << bold_on << "cls: " << bold_off << "clears screen\n";
 	std::cout << bold_on << "help: "<< bold_off << "prints this text\n";
 	std::cout << bold_on << "show: " << bold_off << "shows the responsibility list\n";
-	std::cout << bold_on << "add <DAY> <MONTH> <COURSE> <DESCRIPTION>: " << bold_off << "adds responsibility to list\n";
+	std::cout << bold_on << "add <DAY> <MONTH> <YEAR> <TOPIC> <DESCRIPTION>: " << bold_off << "adds responsibility to list\n";
 	std::cout << bold_on << "del <ID>: "<< bold_off << "deletes responsibility from list\n\n";
 }
 
@@ -105,11 +109,11 @@ void printResp(std::set<Resp, decltype(cmp)*>& resps){
 		std::cout << "no responsibilities\n";
 		return;
 	}
-	int lastDate[2] = {-1, -1};
+	int lastDate[3] = {-1, -1, -1};
 	for(const auto& resp: resps){
-		if(lastDate[0] != resp.day || lastDate[1] != MONTH_LOOKUP.at(resp.month)){
-			std::cout << "\n\n" << bold_on << resp.day << " " << resp.month << bold_off << "\n";
-			lastDate[0] = resp.day; lastDate[1] = MONTH_LOOKUP.at(resp.month);
+		if(lastDate[0] != resp.day || lastDate[1] != MONTH_LOOKUP.at(resp.month) || lastDate[2] != resp.year){
+			std::cout << "\n\n" << bold_on << resp.day << " " << resp.month << " " << resp.year << bold_off << "\n";
+			lastDate[0] = resp.day; lastDate[1] = MONTH_LOOKUP.at(resp.month); lastDate[2] = resp.year;
 		}
 		resp.print();
 	}
@@ -124,7 +128,7 @@ void addResp(const std::string& command, std::set<Resp, decltype(cmp)*>& resps){
 	output.close();
 
 	std::vector<std::string> temptokens = tokenize(command);
-	resps.insert({temp, stoi(temptokens[1]), temptokens[2], temptokens[3], temptokens[4]});
+	resps.insert({temp, stoi(temptokens[1]), temptokens[2], stoi(temptokens[3]), temptokens[4], temptokens[5]});
 }
 
 void deleteResp(const std::string& command, std::string& id, std::set<Resp, decltype(cmp)*>& resps){
@@ -141,7 +145,7 @@ void deleteResp(const std::string& command, std::string& id, std::set<Resp, decl
 			else{
 				deleted = true;
 				std::vector<std::string> temptokens = tokenize(line);
-				resps.erase({stoi(temptokens[0]), stoi(temptokens[1]), temptokens[2], temptokens[3], temptokens[4]});
+				resps.erase({stoi(temptokens[0]), stoi(temptokens[1]), temptokens[2], stoi(temptokens[3]), temptokens[4], temptokens[5]});
 			}
 		}
 	}
