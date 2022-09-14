@@ -104,8 +104,9 @@ void printHelp(){
 	std::cout << bold_on << "help: "<< bold_off << "prints this text\n";
 	std::cout << bold_on << "show [TOPIC]:" << bold_off << "shows the responsibility list, if topic is specified only shows responisibilities of that topic\n";
 	std::cout << bold_on << "add <DAY> <MONTH> <YEAR> <TOPIC> <DESCRIPTION>: " << bold_off << "adds responsibility to list\n";
-	std::cout << bold_on << "del <ID>: "<< bold_off << "deletes responsibility from list\n\n";
+	std::cout << bold_on << "del <ID>: "<< bold_off << "deletes responsibility from list\n";
 	std::cout << bold_on << "change <ID> {day|month|year|topic|description}: " << bold_off << "changes the item of given id\n";
+	std::cout << "\n";
 }
 
 void printResp(const std::set<Resp, decltype(cmp)*>& resps, const std::string& topic){
