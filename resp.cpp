@@ -8,6 +8,7 @@
 #include <regex>
 
 const std::map<std::string, int> MONTH_LOOKUP = {{"Jan", 1}, {"Feb", 2}, {"Mar", 3}, {"Apr", 4}, {"May", 5}, {"July", 6}, {"June", 7}, {"Aug", 8}, {"Sep", 9}, {"Oct", 10}, {"Nov", 11}, {"Dec", 12}};
+const std::map<int, std::string> MONTH_LOOKUP_REVERSE = {{1, "Jan"}, {2, "Feb"}, {3, "Mar"}, {4, "Apr"}, {5, "May"}, {6, "July"}, {7, "June"}, {8, "Aug"}, {9, "Sep"}, {10, "Oct"}, {11, "Nov"}, {12, "Dec"}};
 const char* PATH = "list.txt";
 const char* RESPV = "resp v0.2";
 
@@ -17,6 +18,12 @@ std::ostream& bold_on(std::ostream& os) {
 
 std::ostream& bold_off(std::ostream& os){
     return os << "\e[0m";
+}
+
+bool is_num(std::string& line){
+	char* p;
+	strtol(line.c_str(), &p, 10);
+	return *p == 0;
 }
 
 std::vector<std::string> tokenize(const std::string& command){
@@ -131,12 +138,14 @@ void printResp(const std::set<Resp, decltype(cmp)*>& resps, const std::string& t
 
 void addResp(const std::string& command, std::set<Resp, decltype(cmp)*>& resps){
 	std::ofstream output(PATH, std::ios_base::app);
+	std::vector<std::string> temptokens = tokenize(command);
+	if(is_num(temptokens[2])) temptokens[2] = MONTH_LOOKUP_REVERSE.at(stoi(temptokens[2]));
+
 	int temp = getID();
 	output << temp << " ";
-	output << command.substr(4, command.size() - 4) << "\n";
+	output << temptokens[1] << " " << temptokens[2] << " " << temptokens[3] << " " << temptokens[4] << " \"" << temptokens[5] << "\"\n";
 	output.close();
-
-	std::vector<std::string> temptokens = tokenize(command);
+	
 	resps.insert({temp, stoi(temptokens[1]), temptokens[2], stoi(temptokens[3]), temptokens[4], temptokens[5]});
 }
 
@@ -191,14 +200,18 @@ void changeResp(std::set<Resp, decltype(cmp)*>& resps, const std::string& id, co
 				resps.erase({stoi(temptokens[0]), stoi(temptokens[1]), temptokens[2], stoi(temptokens[3]), temptokens[4], temptokens[5]});
 				Resp temp;
 				if(change == "day") temp = {stoi(temptokens[0]), stoi(changed_str), temptokens[2], stoi(temptokens[3]), temptokens[4], temptokens[5]};
-				else if(change == "month") temp = {stoi(temptokens[0]), stoi(temptokens[1]), changed_str, stoi(temptokens[3]), temptokens[4], temptokens[5]};
+				else if(change == "month"){
+					if(is_num(changed_str)) changed_str = MONTH_LOOKUP_REVERSE.at(stoi(changed_str));
+					temp = {stoi(temptokens[0]), stoi(temptokens[1]), changed_str, stoi(temptokens[3]), temptokens[4], temptokens[5]};
+				}
 				else if(change == "year") temp = {stoi(temptokens[0]), stoi(temptokens[1]), temptokens[2], stoi(changed_str), temptokens[4], temptokens[5]};
 				else if(change == "topic") temp = {stoi(temptokens[0]), stoi(temptokens[1]), temptokens[2], stoi(temptokens[3]), changed_str, temptokens[5]};
 				else if(change == "description") temp = {stoi(temptokens[0]), stoi(temptokens[1]), temptokens[2], stoi(temptokens[3]), temptokens[4], changed_str};
 				
 				resps.insert(temp);
 				std::string temp_str;
-				temp_str = std::to_string(temp.id) + " " + std::to_string(temp.day) + " " + temp.month + " " + std::to_string(temp.year) + " " + temp.topic + " " + temp.description; 
+				temp_str = std::to_string(temp.id) + " " + std::to_string(temp.day) + " " + temp.month + " " + std::to_string(temp.year) + " " + temp.topic + " \"" + temp.description + "\""; 
+				std::cout << temp_str << "\n";
 				lines.push_back(temp_str);
 			}
 		}
