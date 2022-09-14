@@ -9,7 +9,7 @@
 
 const std::map<std::string, int> MONTH_LOOKUP = {{"Jan", 1}, {"Feb", 2}, {"Mar", 3}, {"Apr", 4}, {"May", 5}, {"July", 6}, {"June", 7}, {"Aug", 8}, {"Sep", 9}, {"Oct", 10}, {"Nov", 11}, {"Dec", 12}};
 const char* PATH = "list.txt";
-const char* RESPV = "resp v0.1";
+const char* RESPV = "resp v0.2";
 
 std::ostream& bold_on(std::ostream& os) {
     return os << "\e[1m";
