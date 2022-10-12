@@ -112,6 +112,7 @@ void printHelp(){
 	std::cout << bold_on << "show [TOPIC]: " << bold_off << "shows the responsibility list, if topic is specified only shows responisibilities of that topic\n";
 	std::cout << bold_on << "add <DAY> <MONTH> <YEAR> <TOPIC> <DESCRIPTION>: " << bold_off << "adds responsibility to list\n";
 	std::cout << bold_on << "del <ID>: "<< bold_off << "deletes responsibility from list\n";
+	std::cout << bold_on << "rm <ID>: "<< bold_off << "deletes responsibility from list, same as above\n";
 	std::cout << bold_on << "change <ID> {day|month|year|topic|description}: " << bold_off << "changes the item of given id\n";
 	std::cout << "\n";
 }
@@ -142,11 +143,17 @@ void addResp(const std::string& command, std::set<Resp, decltype(cmp)*>& resps){
 	if(is_num(temptokens[2])) temptokens[2] = MONTH_LOOKUP_REVERSE.at(stoi(temptokens[2]));
 
 	int temp = getID();
+	Resp r_temp{temp, stoi(temptokens[1]), temptokens[2], stoi(temptokens[3]), temptokens[4], temptokens[5]};
+	if(resps.find(r_temp) != resps.end()){
+		std::cout << "responsibility already exists\n";
+		return;
+	}
+	resps.insert(r_temp);
+
 	output << temp << " ";
 	output << temptokens[1] << " " << temptokens[2] << " " << temptokens[3] << " " << temptokens[4] << " \"" << temptokens[5] << "\"\n";
 	output.close();
 	
-	resps.insert({temp, stoi(temptokens[1]), temptokens[2], stoi(temptokens[3]), temptokens[4], temptokens[5]});
 }
 
 void deleteResp(const std::string& command, const std::string& id, std::set<Resp, decltype(cmp)*>& resps){
@@ -160,7 +167,7 @@ void deleteResp(const std::string& command, const std::string& id, std::set<Resp
 				lines.push_back(line);
 				continue;
 			}
-			else{
+			else if(line[i + 1] == ' ' && i == id.size() - 1){
 				deleted = true;
 				std::vector<std::string> temptokens = tokenize(line);
 				resps.erase({stoi(temptokens[0]), stoi(temptokens[1]), temptokens[2], stoi(temptokens[3]), temptokens[4], temptokens[5]});
@@ -194,7 +201,7 @@ void changeResp(std::set<Resp, decltype(cmp)*>& resps, const std::string& id, co
 				lines.push_back(line);
 				continue;
 			}
-			else{
+			else if(line[i + 1] == ' ' && i == id.size() - 1){
 				changed = true;
 				std::vector<std::string> temptokens = tokenize(line);
 				resps.erase({stoi(temptokens[0]), stoi(temptokens[1]), temptokens[2], stoi(temptokens[3]), temptokens[4], temptokens[5]});
@@ -250,7 +257,7 @@ int main(){
 		}
 		else if(tokens[0] == "q") return 0;
 		else if(tokens[0] == "add") addResp(command, resps);
-		else if(tokens[0] == "del") deleteResp(command, tokens[1], resps);
+		else if(tokens[0] == "del" || tokens[0] == "rm") deleteResp(command, tokens[1], resps);
 		else if(tokens[0] == "cls") system("clear");
 		else if(tokens[0] == "change") changeResp(resps, tokens[1], tokens[2]);
 		else std::cout << "command not found\n";
